@@ -87,11 +87,11 @@ internal class Curses {
         }
     }
 
-    func cursorPosition(windowHandle:UnsafeMutablePointer<WINDOW>) -> Point {
+    func cursorPosition(windowHandle:OpaquePointer) -> Point {
         return getCursorPosition(windowHandle:windowHandle)
     }
 
-    func screenSize(windowHandle:UnsafeMutablePointer<WINDOW>) -> Size {
+    func screenSize(windowHandle:OpaquePointer) -> Size {
         return getScreenSize(windowHandle:windowHandle)
     }
     
@@ -99,7 +99,7 @@ internal class Curses {
         ncurses.curs_set(cursorStyle.rawValue)
     }
 
-    func setKeyPadMode(windowHandle:UnsafeMutablePointer<WINDOW>) {
+    func setKeyPadMode(windowHandle:OpaquePointer) {
         ncurses.keypad(windowHandle, true) // Processes special keys into special codes rather than escape sequences
     }
 
@@ -114,71 +114,71 @@ internal class Curses {
         }
     }
 
-    func setScroll(windowHandle:UnsafeMutablePointer<WINDOW>, enabled:Bool) {
+    func setScroll(windowHandle:OpaquePointer, enabled:Bool) {
         ncurses.scrollok(windowHandle, enabled)
     }
 
-    func getKey(windowHandle:UnsafeMutablePointer<WINDOW>) -> Key {
+    func getKey(windowHandle:OpaquePointer) -> Key {
         let code =  ncurses.wgetch(windowHandle)
         let key = Key(code:code)
         return key
     }
 
-    func newWindow(position:Point, size:Size) -> UnsafeMutablePointer<WINDOW> {
+    func newWindow(position:Point, size:Size) -> OpaquePointer {
         return ncurses.newwin(Int32(size.height), Int32(size.width), Int32(position.y), Int32(position.x))
     }
 
-    func moveWindow(windowHandle:UnsafeMutablePointer<WINDOW>, to:Point) {
+    func moveWindow(windowHandle:OpaquePointer, to:Point) {
         ncurses.mvwin(windowHandle, Int32(to.y), Int32(to.x))
     }
 
-    func getWindowPosition(windowHandle:UnsafeMutablePointer<WINDOW>) -> Point {
+    func getWindowPosition(windowHandle:OpaquePointer) -> Point {
         let xPosition = getbegx(windowHandle)
         let yPosition = getbegy(windowHandle)
         return Point(x:Int(xPosition), y:Int(yPosition))
     }
 
-    func resizeWindow(windowHandle:UnsafeMutablePointer<WINDOW>, size:Size) {
+    func resizeWindow(windowHandle:OpaquePointer, size:Size) {
         ncurses.wresize(windowHandle, Int32(size.height), Int32(size.width))
     }
     
-    func refresh(windowHandle:UnsafeMutablePointer<WINDOW>) {
+    func refresh(windowHandle:OpaquePointer) {
         ncurses.wrefresh(windowHandle)
     }
 
-    func clear(windowHandle:UnsafeMutablePointer<WINDOW>) {
+    func clear(windowHandle:OpaquePointer) {
         ncurses.wclear(windowHandle)
     }
 
-    func clearToEndOfLine(windowHandle:UnsafeMutablePointer<WINDOW>) {
+    func clearToEndOfLine(windowHandle:OpaquePointer) {
         ncurses.wclrtoeol(windowHandle)
     }
 
-    func clearToBottomOfWindow(windowHandle:UnsafeMutablePointer<WINDOW>) {
+    func clearToBottomOfWindow(windowHandle:OpaquePointer) {
         ncurses.wclrtobot(windowHandle)
     }
     
-    func move(windowHandle:UnsafeMutablePointer<WINDOW>, to:Point) {
+    func move(windowHandle:OpaquePointer, to:Point) {
         ncurses.wmove(windowHandle, Int32(to.y), Int32(to.x))
     }
 
-    func write(windowHandle:UnsafeMutablePointer<WINDOW>, string:String) {
+    func write(windowHandle:OpaquePointer, string:String) {
         ncurses.waddstr(windowHandle, string)
     }
 
-    func attributeOn(windowHandle:UnsafeMutablePointer<WINDOW>, attributeValue:Int) {
+    func attributeOn(windowHandle:OpaquePointer, attributeValue:Int) {
         ncurses.wattron(windowHandle, Int32(attributeValue))
     }
 
-    func attributeOff(windowHandle:UnsafeMutablePointer<WINDOW>, attributeValue:Int) {
+    func attributeOff(windowHandle:OpaquePointer, attributeValue:Int) {
         ncurses.wattroff(windowHandle, Int32(attributeValue))
     }
 
-    func attributeSet(windowHandle:UnsafeMutablePointer<WINDOW>, attributeValue:Int) {
+    func attributeSet(windowHandle:OpaquePointer, attributeValue:Int) {
         ncurses.wattrset(windowHandle, Int32(attributeValue))
     }
 
-    func backgroundSet(windowHandle:UnsafeMutablePointer<WINDOW>, attributeValue:Int, character:Character) {
+    func backgroundSet(windowHandle:OpaquePointer, attributeValue:Int, character:Character) {
         let unicodeScalars = character.unicodeScalars
         let ascii = UInt32(unicodeScalars[unicodeScalars.startIndex].value)
         let attributeAndCharacter : UInt32 = UInt32(attributeValue) | ascii
@@ -272,13 +272,13 @@ internal class Curses {
 
     // ============================== Helper Functions ==============================
     // NB:  This appears to only update after an endwin/refresh/initscr
-    private func getScreenSize(windowHandle:UnsafeMutablePointer<WINDOW>) -> Size {
+    private func getScreenSize(windowHandle:OpaquePointer) -> Size {
         let width  : Int32 = getmaxx(windowHandle)
         let height : Int32 = getmaxy(windowHandle)
         return Size(width:Int(width), height:Int(height))
     }
 
-    private func getCursorPosition(windowHandle:UnsafeMutablePointer<WINDOW>) -> Point {
+    private func getCursorPosition(windowHandle:OpaquePointer) -> Point {
         let x : Int32 = getcurx(windowHandle)
         let y : Int32 = getcury(windowHandle)
         return Point(x:Int(x), y:Int(y))
@@ -333,7 +333,11 @@ internal class Curses {
         case winch = 28
     }
 
+    #if os(macOS)
+    private typealias SignalHandler = sig_t
+    #else
     private typealias SignalHandler = __sighandler_t
+    #endif
 
     private static func trap(signalNumber:Signal, action:@escaping SignalHandler) {
         signal(signalNumber.rawValue, action)

@@ -21,7 +21,7 @@ import ncurses
 public class Window {
     private let curses = Curses.shared
     
-    let windowHandle : UnsafeMutablePointer<WINDOW>
+    let windowHandle : OpaquePointer
     private var _cursor : Cursor! = nil
 
     public var cursor : Cursor {

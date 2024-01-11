@@ -11,9 +11,12 @@ let package = Package(
              targets: ["Curses"]),
   ], 
   targets: [
+    .systemLibrary(name: "ncurses", providers: [
+      .apt(["ncurses"]),
+      .brew(["ncurses"])
+    ]),
     .target(
       name:"Curses",
       dependencies: ["ncurses"]),
-    .systemLibrary(name: "ncurses")
   ]
 )
