@@ -22,6 +22,7 @@ public protocol CursesHandlerProtocol {
     func interruptHandler()
 
 
-    // This handler is invoked whenever the window changes size
-    func windowChangedHandler()
+    // This handler is invoked whenever the terminal changes size
+    // terminalSize is the new terminal size
+    func windowChangedHandler(_ terminalSize: Size)
 }

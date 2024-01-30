@@ -363,7 +363,11 @@ internal class Curses {
 
     private static func winchHandler(_ signal:Int32) {
         if let handler = handler {
-            handler.windowChangedHandler()
+            var w = winsize()
+            let _ = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) // Should never return anything other than 0?
+            handler.windowChangedHandler(
+                Size(width: Int(w.ws_col), height: Int(w.ws_row))
+            )
         }
     }
 
