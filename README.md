@@ -1,6 +1,15 @@
 # Curses
 Curses provides a Swift object wrapper for the curses programming library for Linux (tested on Ubuntu 16.04, 18.04)
 
+## Why this fork?
+This fork resolves a number of issues, and is primarily for my personal use.
+However you are welcome to use it if you find the changes useful.
+
+Changes to the original library include:
+* [Support for macOS](https://github.com/jackgene/Curses/commit/737ede15ff3c8792d13ead69de95bd6bcc1dc9eb) by replacing `UnsafeMutablePointer<WINDOW>`s with `OpaquePointer`s.
+* [Improved terminal resize listener ("windowChangedListener")](https://github.com/jackgene/Curses/commit/b3b28871768f4e4e2d852cb6cffc3b635d2fb815) that provides the new size of the terminal.
+* [Repacement of broken "make" script with actual Makefile](https://github.com/jackgene/Curses/commit/dca21a7d3162506558cdc863d6582f2b2ff5c763).
+
 ## What is Curses?
 Curses enables better-looking, text-based (console) applications in a terminal-agnostic manner.
 This wrapper provides access to some of this functionality via Swift objects.  Current functionality suppports:
