@@ -8,6 +8,7 @@ However you are welcome to use it if you find the changes useful.
 Changes to the original library include:
 * [Support for macOS](https://github.com/jackgene/Curses/commit/737ede15ff3c8792d13ead69de95bd6bcc1dc9eb) by replacing `UnsafeMutablePointer<WINDOW>`s with `OpaquePointer`s.
 * [Improved terminal resize listener ("windowChangedListener")](https://github.com/jackgene/Curses/commit/b3b28871768f4e4e2d852cb6cffc3b635d2fb815) that provides the new size of the terminal.
+* [Automatically call endwin() when a windowChangedListener is registered](https://github.com/jackgene/Curses/commit/e9a8043e132e4644ae7b0cefbd6737f07c04749c) to update `screen.window` size, position etc, so that consumers do not have to resort to low-level ncurses API.
 * [Repacement of broken "make" script with actual Makefile](https://github.com/jackgene/Curses/commit/dca21a7d3162506558cdc863d6582f2b2ff5c763).
 
 ## What is Curses?
