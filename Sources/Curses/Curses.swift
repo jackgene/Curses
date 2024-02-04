@@ -363,11 +363,13 @@ internal class Curses {
 
     private static func winchHandler(_ signal:Int32) {
         if let handler = handler {
-            var w = winsize()
-            let _ = ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) // Should never return anything other than 0?
-            handler.windowChangedHandler(
-                Size(width: Int(w.ws_col), height: Int(w.ws_row))
-            )
+            // From: https://stackoverflow.com/questions/13707137/resizing-glitch-with-ncurses
+            // We are assuming that application that register this handler will
+            // want the standard window size updated without having to drop
+            // down to the low-level ncurses API
+            ncurses.endwin()
+            ncurses.refresh()
+            handler.windowChangedHandler(Self.shared.getScreenSize(windowHandle: stdscr))
         }
     }
 
